@@ -11,6 +11,8 @@ tangler:=$(pandoc_tangle_submodule)/tangle.lua
 LUA_PATH=$(pandoc_tangle_submodule)/?.lua;;
 export LUA_PATH
 
+OPAM ?= opam
+
 .PHONY: deps ocaml-deps \
         defn defn-ocaml defn-haskell \
         build build-ocaml build-haskell \
@@ -38,8 +40,8 @@ $(pandoc_tangle_submodule)/make.timestamp:
 	touch $(pandoc_tangle_submodule)/make.timestamp
 
 ocaml-deps:
-	eval $$(opam config env) \
-	    opam install --yes mlgmp zarith uuidm
+	eval $$($(OPAM) config env) \
+	    $(OPAM) install --yes mlgmp zarith uuidm
 
 # Building Definition
 # -------------------
@@ -89,19 +91,19 @@ build-haskell: $(haskell_kompiled)
 
 $(ocaml_kompiled): $(ocaml_defn)
 	@echo "== kompile: $@"
-	eval $$(opam config env)                                                          \
+	eval $$($(OPAM) config env)                                                       \
 	    $(k_bin)/kompile -O3 --non-strict --backend ocaml                             \
 	    --directory $(ocaml_dir) --main-module WASM-TEST --syntax-module WASM-TEST $<
 
 $(java_kompiled): $(java_defn)
 	@echo "== kompile: $@"
-	eval $$(opam config env)                                                         \
+	eval $$($(OPAM) config env)                                                      \
 	    $(k_bin)/kompile --backend java                                              \
 	    --directory $(java_dir) --main-module WASM-TEST --syntax-module WASM-TEST $<
 
 $(haskell_kompiled): $(haskell_defn)
 	@echo "== kompile: $@"
-	eval $$(opam config env)                                                            \
+	eval $$($(OPAM) config env)                                                         \
 	    $(k_bin)/kompile --backend haskell                                              \
 	    --directory $(haskell_dir) --main-module WASM-TEST --syntax-module WASM-TEST $<
 
